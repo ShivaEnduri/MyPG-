@@ -1,0 +1,44 @@
+/* Admin component styles - explicit CSS classes matching v4 semantic tokens */
+/* This bypasses Tailwind v4 processing entirely */
+
+.bg-primary { background-color: #030213 !important; }
+.text-primary-foreground { color: #ffffff !important; }
+.bg-primary\/90:hover, .hover\:bg-primary\/90:hover { background-color: rgba(3,2,19,0.9) !important; }
+.bg-secondary { background-color: oklch(0.95 0.0058 264.53) !important; }
+.text-secondary-foreground { color: #030213 !important; }
+.bg-card { background-color: #ffffff !important; }
+.text-card-foreground { color: oklch(0.145 0 0) !important; }
+.bg-background { background-color: #ffffff !important; }
+.text-foreground { color: oklch(0.145 0 0) !important; }
+.bg-muted { background-color: #ececf0 !important; }
+.bg-muted\/50 { background-color: rgba(236,236,240,0.5) !important; }
+.text-muted-foreground { color: #717182 !important; }
+.bg-accent { background-color: #e9ebef !important; }
+.text-accent-foreground { color: #030213 !important; }
+.bg-destructive { background-color: #d4183d !important; }
+.text-destructive { color: #d4183d !important; }
+.border-border { border-color: rgba(0,0,0,0.1) !important; }
+.border-input { border-color: rgba(0,0,0,0.1) !important; }
+.bg-input-background { background-color: #f3f3f5 !important; }
+.ring-ring { --tw-ring-color: oklch(0.708 0 0) !important; }
+.text-primary { color: #030213 !important; }
+
+/* hover variants */
+.hover\:bg-accent:hover { background-color: #e9ebef !important; }
+.hover\:text-accent-foreground:hover { color: #030213 !important; }
+.hover\:bg-secondary\/80:hover { background-color: rgba(236,236,240,0.8) !important; }
+.hover\:bg-muted\/50:hover { background-color: rgba(236,236,240,0.5) !important; }
+
+/* focus variants */
+.focus\:bg-accent:focus { background-color: #e9ebef !important; }
+.focus\:text-accent-foreground:focus { color: #030213 !important; }
+
+/* data variants for radix */
+[data-state=checked].data-\[state\=checked\]\:bg-primary { background-color: #030213 !important; }
+[data-state=active].data-\[state\=active\]\:bg-card { background-color: #ffffff !important; }
+
+
+
+/* ring utilities needed by focus-visible */
+.focus-visible\:ring-\[3px\]:focus-visible { box-shadow: 0 0 0 3px oklch(0.708 0 0 / 0.5); }
+.focus-visible\:border-ring:focus-visible { border-color: oklch(0.708 0 0); }

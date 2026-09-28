@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Primary Meta -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Title & Favicon -->
+    <title>
+      Premium Gated Community Rentals in Hyderabad – Rufrent | Find & List Apartments, Houses, Villas
+    </title>
+    <link rel="icon" href="/RUFRENTFAV.png" type="image/x-icon" />
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G9RQE72MW1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-G9RQE72MW1');
+    </script>
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Experience luxury living in Hyderabad’s finest gated communities. Rufrent offers trusted, verified rentals with expert guidance for a seamless, premium lifestyle."
+    />
+    <meta
+      name="keywords"
+      content="property rental Hyderabad, Myhome Properties, My Home Communities, MyHome Vihanga, MyHome Krishe, MyHome Tridasa, MyHome Mangala, MyHome Ankura, MyHome Jewel, MyHome Trakshya, MyHome Navadeepa, MyHome Abhra, apartment Hyderabad, house for rent Hyderabad, flat rent Hyderabad, villas for rent Hyderabad, list property Hyderabad, tenant finder Hyderabad, rental management Hyderabad, Gachibowli rentals, Hitech City flats, Kondapur houses"
+    />
+    <meta name="author" content="QTIMINDS PRIVATE LIMITED" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index,follow" />
+
+    <!-- Canonical & Verification -->
+    <link rel="canonical" href="https://www.rufrent.com" />
+    <meta name="google-site-verification" content="QwQkzGQ1I-HqZ0xWGNuN1NUCflSp4nnwdDF5zHrb73U" />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.rufrent.com/" />
+    <meta property="og:title" content="Premium Gated Community Rentals in Hyderabad – Rufrent" />
+    <meta property="og:description" content="Experience luxury living in Hyderabad’s finest gated communities." />
+    <meta property="og:image" content="https://www.rufrent.com/images/social/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Rufrent" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Preload Critical Resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
+
+    <!-- Tailwind CDN (Development Only – Remove in Production) -->
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Tailwind Config (Customize Colors, Radius, etc.) -->
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: '#1A1F3D',
+              secondary: '#E07A5F',
+              accent: '#7C9A92',
+              completed: '#10b981',
+              pending: '#f59e0b',
+              notstarted: '#f472b6'
+            },
+            borderRadius: {
+              'none': '0px',
+              'sm': '4px',
+              'DEFAULT': '8px',
+              'md': '12px',
+              'lg': '16px',
+              'xl': '20px',
+              '2xl': '24px',
+              '3xl': '32px',
+              'button': '8px'
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="/src/index.css" />
+    <style>
+      :root {
+        --glass-bg: rgba(255, 255, 255, 0.1);
+        --glass-border: rgba(255, 255, 255, 0.15);
+      }
+      .dark {
+        --glass-bg: rgba(0, 0, 0, 0.3);
+        --glass-border: rgba(255, 255, 255, 0.1);
+      }
+      .glassmorphic {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+      }
+      .neumorphic {
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1), -4px -4px 8px rgba(255, 255, 255, 0.1);
+      }
+      .dark .neumorphic {
+        box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(255, 255, 255, 0.05);
+      }
+      .sidebar { transition: transform 0.3s ease; }
+      .sidebar-hidden { transform: translateX(-100%); }
+      .toast { animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s forwards; }
+      @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+      .form-input:focus { border-color: #7c9a92 !important; outline: none; }
+      .status-active, .status-pending { color: #eab308; }
+      .status-completed, .status-paid { color: #22c55e; }
+      .status-approved { color: #3b82f6; }
+      .button-hover:hover { transform: scale(1.05); }
+    </style>
+  </head>
+
+  <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen antialiased">
+    <div id="root"></div>
+
+    <!-- Vite Entry Point (TypeScript + React) -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

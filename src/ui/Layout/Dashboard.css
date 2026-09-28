@@ -1,0 +1,181 @@
+:root {
+  --Text: #030229;
+  --Stroke-Color: #EFF0F6;
+  --Blue: #0F45A9;
+}
+
+/* Page wrapper */
+.dash-wrap {
+  padding: 20px;
+  background: #f7f8fb;
+  min-height: 100vh;
+}
+
+/* Heading */
+.dash-heading {
+  color: var(--Text);
+  font-family: Nunito, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 18px 0;
+}
+
+/* ===== Cards grid (responsive) ===== */
+.dash-cards {
+  display: grid;
+  gap: 18px;
+  /* Responsive columns; each card can shrink to 320px then wrap */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+/* Card shell */
+.profit-card {
+  width: 100%;
+  max-width: 364px;     /* keeps the design size on wide screens */
+  height: 409px;
+  margin: 0 auto;       /* centers in its grid cell when narrower than cell */
+  border-radius: 20px;
+  border: 1px solid var(--Stroke-Color);
+  background: #fff;
+  padding: 20px;
+  line-height: normal;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+
+/* Titles used on all cards */
+.profit-title {
+  color: #4D4D4D;
+  font-family: Inter, system-ui;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.154px;
+  margin: 0 0 12px;
+}
+
+/* Chart area */
+.profit-visual {
+  background: #fff;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  padding: 12px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+
+/* Profitability subtext line */
+.profit-subtext {
+  color: #000;
+  font-feature-settings: 'liga' off, 'clig' off;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: -0.154px;
+  margin: 0 0 14px 0;
+  margin-left: 60px;
+}
+
+/* Link-like button at bottom of each card */
+.profit-view {
+  display: inline-block;
+  width: 145px;
+  height: 15px;
+  color: var(--Blue);
+  font-family: Inter, system-ui;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 12.612px;
+
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  margin-left: 160px;
+  
+}
+.profit-view:hover { text-decoration: underline; }
+
+/* Occupancy text */
+.occ-strong {
+  text-align: center;
+  margin: 6px 0 2px;
+  font-family: Inter, system-ui;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+.occ-note {
+  text-align: center;
+  margin: 0 0 14px;
+  font-family: Inter, system-ui;
+  font-size: 12px;
+  color: #6B7280;
+}
+
+/* Pending dues text/legend */
+.pending-text {
+  text-align: center;
+  margin: 6px 0 10px;
+  font-family: Inter, system-ui;
+  font-size: 14px;
+  color: #111827;
+}
+.pending-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-family: Inter, system-ui; font-size: 12px; color:#111827; }
+.legend-swatch { width: 16px; height: 8px; border-radius: 4px; display: inline-block; }
+.legend-green { background: #16A34A; }
+.legend-red   { background: #EF4444; }
+
+/* ===== Actions row (always one line; scroll on small screens) ===== */
+.dash-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  margin-top: 14px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 6px;        
+    /* increase this as needed */
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1.5px solid #D6E4FF;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  cursor: pointer;
+
+  color: var(--Blue);
+  font-family: Inter, system-ui;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;     
+  margin-left:21px;
+}
+.action-btn:hover {
+  border-color: var(--Blue);
+  background: #F5FAFF;
+  box-shadow: 0 2px 6px rgba(16,24,40,.08);
+}
+.action-icon { width: 27px; height: 27px; object-fit: contain; margin-top: 7px; }
+.action-icon1 { width: 27px; height: 27px; object-fit: contain;  }
+.action-icon2 { width: 27px; height: 27px; object-fit: contain;  }
+.action-icon3 { width: 27px; height: 27px; object-fit: contain;margin-top: 5px;  }
+.action-icon4 { width: 24px; height: 24px; object-fit: contain; }
+
+/* ===== Small screens tweaks ===== */
+@media (max-width: 768px) {
+  .dash-wrap { padding: 16px; }
+  .profit-card { height: auto; }        /* let height grow naturally */
+  .profit-visual { margin-bottom: 8px; }
+}
