@@ -565,7 +565,8 @@ export interface ServiceRequestRecord {
     SLA: number;
     feedback: number;
     serviceStatus: number;
-    pgId: number;
+    pg_id: number;
+    pg_name:string;
     requestEtaDate: string | null;
     overdueDays: number;
   };
@@ -1287,10 +1288,69 @@ export const createServiceRequest = (
 ) => {
   const url = buildApiUrl("/addRecord", "pgServiceRequests");
 
-  return axiosInstance.post(
-    url,
-    buildPayload(data)   
-  );
+  const payload = buildPayload({
+    ...data,
+
+    // Prisma expects Int
+    requestor_info:
+      data.requestor_info !== undefined &&
+      data.requestor_info !== null &&
+      data.requestor_info !== ""
+        ? Number(data.requestor_info)
+        : null,
+
+    // Prisma expects Int | Null
+    request_assigned_to:
+      data.request_assigned_to !== undefined &&
+      data.request_assigned_to !== null &&
+      data.request_assigned_to !== ""
+        ? Number(data.request_assigned_to)
+        : null,
+
+    // Prisma expects Int
+    SLA:
+      data.SLA !== undefined &&
+      data.SLA !== null &&
+      data.SLA !== ""
+        ? Number(data.SLA)
+        : null,
+
+    // Prisma expects Int
+    service_category:
+      data.service_category !== undefined &&
+      data.service_category !== null &&
+      data.service_category !== ""
+        ? Number(data.service_category)
+        : null,
+
+    // Prisma expects Int
+    service_status:
+      data.service_status !== undefined &&
+      data.service_status !== null &&
+      data.service_status !== ""
+        ? Number(data.service_status)
+        : null,
+
+    // Prisma expects Int
+    pg_id:
+      data.pg_id !== undefined &&
+      data.pg_id !== null &&
+      data.pg_id !== ""
+        ? Number(data.pg_id)
+        : null,
+
+    // Prisma expects Int | Null
+    feedback:
+      data.feedback !== undefined &&
+      data.feedback !== null &&
+      data.feedback !== ""
+        ? Number(data.feedback)
+        : null,
+  });
+
+  
+
+  return axiosInstance.post(url, payload);
 };
 
 

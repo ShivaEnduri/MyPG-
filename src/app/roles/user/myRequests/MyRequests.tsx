@@ -276,7 +276,11 @@ const mapServiceRequest = (
       request?.request_create_date,
     ),
 
-    room: "—",
+    room:
+      request?.room_name ||
+      request?.room_no ||
+      request?.room ||
+      "—",
 
     description:
       request?.service_description ||
@@ -437,12 +441,7 @@ const RaiseRequestForm: FC<
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-2">
-
       <div className="w-full max-w-[360px] rounded-lg border border-gray-100 bg-white shadow-xl">
-
-        {/* ------------------------------------------------------------- */}
-        {/* Form Header                                                    */}
-        {/* ------------------------------------------------------------- */}
 
         <div className="flex items-center justify-between border-b border-gray-100 px-2 py-1.5">
           <div>
@@ -465,13 +464,7 @@ const RaiseRequestForm: FC<
           </button>
         </div>
 
-        {/* ------------------------------------------------------------- */}
-        {/* Form Body                                                       */}
-        {/* ------------------------------------------------------------- */}
-
         <div className="space-y-1.5 px-2 py-2">
-
-          {/* Service Category */}
 
           <div>
             <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
@@ -480,17 +473,27 @@ const RaiseRequestForm: FC<
 
             <select
               value={form.service_category}
-              onChange={(e) =>
+              onChange={(e) => {
+                const selectedCategory =
+                  categories.find(
+                    (category) =>
+                      String(category.id) ===
+                      e.target.value,
+                  );
+
                 setForm((prev) => ({
                   ...prev,
                   service_category:
                     e.target.value,
-                }))
-              }
-              disabled={
-                submitting ||
-                categoriesLoading
-              }
+
+                  SLA: selectedCategory
+                    ? String(
+                        selectedCategory.resolve_timeline,
+                      )
+                    : prev.SLA,
+                }));
+              }}
+              disabled={submitting || categoriesLoading}
               className="w-full rounded border border-gray-200 bg-white px-1.5 py-1 text-[6.5px] text-gray-800 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-100 sm:text-[7px]"
             >
               <option value="">
@@ -499,41 +502,16 @@ const RaiseRequestForm: FC<
                   : "Select category"}
               </option>
 
-              {categories.map(
-                (category: any) => {
-                  const categoryId =
-                    category?.id ??
-                    category?.category_id;
-
-                  const categoryName =
-                    category?.name ??
-                    category?.category_name ??
-                    category?.title ??
-                    `Category ${categoryId}`;
-
-                  if (
-                    categoryId ===
-                    undefined
-                  ) {
-                    return null;
-                  }
-
-                  return (
-                    <option
-                      key={categoryId}
-                      value={String(
-                        categoryId,
-                      )}
-                    >
-                      {categoryName}
-                    </option>
-                  );
-                },
-              )}
+              {categories.map((category) => (
+                <option
+                  key={category.id}
+                  value={category.id}
+                >
+                  {category.service_category}
+                </option>
+              ))}
             </select>
           </div>
-
-          {/* Service Title */}
 
           <div>
             <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
@@ -556,17 +534,13 @@ const RaiseRequestForm: FC<
             />
           </div>
 
-          {/* Description */}
-
           <div>
             <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
               Description
             </label>
 
             <textarea
-              value={
-                form.service_description
-              }
+              value={form.service_description}
               onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
@@ -581,11 +555,7 @@ const RaiseRequestForm: FC<
             />
           </div>
 
-          {/* ETA + SLA */}
-
           <div className="grid grid-cols-2 gap-1">
-
-            {/* ETA */}
 
             <div>
               <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
@@ -614,8 +584,6 @@ const RaiseRequestForm: FC<
               />
             </div>
 
-            {/* SLA */}
-
             <div>
               <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
                 SLA (Hours)
@@ -638,8 +606,6 @@ const RaiseRequestForm: FC<
             </div>
           </div>
 
-          {/* Error */}
-
           {error && (
             <div className="rounded border border-red-100 bg-red-50 px-1.5 py-1">
               <p className="text-[6px] leading-relaxed text-red-600 sm:text-[6.5px]">
@@ -648,10 +614,6 @@ const RaiseRequestForm: FC<
             </div>
           )}
         </div>
-
-        {/* ------------------------------------------------------------- */}
-        {/* Form Footer                                                     */}
-        {/* ------------------------------------------------------------- */}
 
         <div className="flex items-center justify-end gap-1 border-t border-gray-100 px-2 py-1.5">
 
@@ -705,19 +667,18 @@ export const MyRequests: FC<
   const { user } = useAuth();
 
   /* --------------------------------------------------------------------- */
-  /* Service request store                                                 */
+  /* Service request store                                                  */
   /* --------------------------------------------------------------------- */
 
   const {
-    serviceRequests: requests,
+    data: serviceRequests,
     loading,
     error,
-    fetchServiceRequests: fetchRequests,
-    createServiceRequest: addRequest,
+    fetchServiceRequests,
   } = useServiceRequestsStore();
 
   /* --------------------------------------------------------------------- */
-  /* Service category store                                                */
+  /* Service category store                                                 */
   /* --------------------------------------------------------------------- */
 
   const {
@@ -754,7 +715,28 @@ export const MyRequests: FC<
     useResponsiveVisibleCount();
 
   /* --------------------------------------------------------------------- */
-  /* Fetch resident requests                                               */
+  /* PG ID                                                                  */
+  /* --------------------------------------------------------------------- */
+
+  const pgId = useMemo(() => {
+    if (!Array.isArray(serviceRequests)) {
+      return 0;
+    }
+
+    const firstRecord =
+      serviceRequests.find(
+        (request: any) =>
+          request?.pg_id !== undefined &&
+          request?.pg_id !== null,
+      );
+
+    return (firstRecord as any)?.pg_id
+      ? Number((firstRecord as any).pg_id)
+      : 0;
+  }, [serviceRequests]);
+
+  /* --------------------------------------------------------------------- */
+  /* Fetch service requests                                                 */
   /* --------------------------------------------------------------------- */
 
   useEffect(() => {
@@ -762,14 +744,26 @@ export const MyRequests: FC<
       return;
     }
 
-    fetchRequests(Number(user.id));
+    /*
+     * The new serviceRequestsStore fetches using pgId.
+     *
+     * Therefore we first try to obtain pgId from the
+     * currently available request data.
+     *
+     * If your user/PG mapping store already provides pgId,
+     * replace the pgId calculation above with that store.
+     */
+    if (pgId > 0) {
+      fetchServiceRequests(pgId);
+    }
   }, [
     user?.id,
-    fetchRequests,
+    pgId,
+    fetchServiceRequests,
   ]);
 
   /* --------------------------------------------------------------------- */
-  /* Fetch service categories                                              */
+  /* Fetch service categories                                               */
   /* --------------------------------------------------------------------- */
 
   useEffect(() => {
@@ -777,68 +771,47 @@ export const MyRequests: FC<
   }, [fetchServiceCategories]);
 
   /* --------------------------------------------------------------------- */
-  /* Convert API records to UI records                                     */
+  /* Convert API records to UI records                                      */
   /* --------------------------------------------------------------------- */
 
   const mappedRequests = useMemo(() => {
-    if (!Array.isArray(requests)) {
+    if (!Array.isArray(serviceRequests)) {
       return [];
     }
 
-    return requests
+    return serviceRequests
       .map(mapServiceRequest)
       .filter(
         (item): item is RequestItem =>
           item !== null,
       );
-  }, [requests]);
+  }, [serviceRequests]);
 
   /* --------------------------------------------------------------------- */
-  /* Dynamic PG name                                                       */
+  /* Dynamic PG name                                                        */
   /* --------------------------------------------------------------------- */
 
   const pgName = useMemo(() => {
     const firstRecord =
-      Array.isArray(requests)
-        ? requests[0]
+      Array.isArray(serviceRequests)
+        ? serviceRequests[0]
         : null;
 
     return (
-      firstRecord?.pg_name ||
+      (firstRecord as { pg_name?: string } | null)?.pg_name ||
       "My PG"
     );
-  }, [requests]);
+  }, [serviceRequests]);
 
   /* --------------------------------------------------------------------- */
-  /* PG ID                                                                  */
-  /* --------------------------------------------------------------------- */
-
-  const pgId = useMemo(() => {
-    const firstRecord =
-      Array.isArray(requests)
-        ? requests.find(
-            (request: any) =>
-              request?.pg_id !==
-                undefined &&
-              request?.pg_id !== null,
-          )
-        : null;
-
-    return firstRecord?.pg_id
-      ? Number(firstRecord.pg_id)
-      : 0;
-  }, [requests]);
-
-  /* --------------------------------------------------------------------- */
-  /* Dynamic counts                                                        */
+  /* Dynamic counts                                                         */
   /* --------------------------------------------------------------------- */
 
   const openCount = useMemo(
     () =>
       mappedRequests.filter(
         (request) =>
-          request.status ===
-          "Open",
+          request.status === "Open",
       ).length,
     [mappedRequests],
   );
@@ -847,8 +820,7 @@ export const MyRequests: FC<
     () =>
       mappedRequests.filter(
         (request) =>
-          request.status ===
-          "In Progress",
+          request.status === "In Progress",
       ).length,
     [mappedRequests],
   );
@@ -857,14 +829,13 @@ export const MyRequests: FC<
     () =>
       mappedRequests.filter(
         (request) =>
-          request.status ===
-          "Resolved",
+          request.status === "Resolved",
       ).length,
     [mappedRequests],
   );
 
   /* --------------------------------------------------------------------- */
-  /* Filtering                                                             */
+  /* Filtering                                                              */
   /* --------------------------------------------------------------------- */
 
   const filteredRequests = useMemo(() => {
@@ -874,8 +845,7 @@ export const MyRequests: FC<
 
     return mappedRequests.filter(
       (request) =>
-        request.status ===
-        activeFilter,
+        request.status === activeFilter,
     );
   }, [
     mappedRequests,
@@ -883,7 +853,7 @@ export const MyRequests: FC<
   ]);
 
   /* --------------------------------------------------------------------- */
-  /* Visible requests                                                      */
+  /* Visible requests                                                       */
   /* --------------------------------------------------------------------- */
 
   const visibleRequests = expanded
@@ -905,7 +875,7 @@ export const MyRequests: FC<
   };
 
   /* --------------------------------------------------------------------- */
-  /* Open form                                                             */
+  /* Open form                                                              */
   /* --------------------------------------------------------------------- */
 
   const handleOpenRequestForm = () => {
@@ -923,7 +893,7 @@ export const MyRequests: FC<
   };
 
   /* --------------------------------------------------------------------- */
-  /* Close form                                                            */
+  /* Close form                                                             */
   /* --------------------------------------------------------------------- */
 
   const handleCloseRequestForm = () => {
@@ -936,190 +906,33 @@ export const MyRequests: FC<
   };
 
   /* --------------------------------------------------------------------- */
-  /* Submit request                                                        */
+  /* Submit request                                                         */
   /* --------------------------------------------------------------------- */
 
   const handleSubmitRequest = async () => {
-    setFormError(null);
-
-    if (!user?.id) {
-      setFormError(
-        "Unable to identify the resident. Please login again.",
-      );
-      return;
-    }
-
-    const numericUserId =
-      Number(user.id);
-
-    if (
-      !Number.isInteger(
-        numericUserId,
-      )
-    ) {
-      setFormError(
-        "Invalid resident ID.",
-      );
-      return;
-    }
-
-    if (!pgId) {
-      setFormError(
-        "Unable to identify your PG. Please refresh the page and try again.",
-      );
-      return;
-    }
-
-    if (!form.service_category) {
-      setFormError(
-        "Please select a service category.",
-      );
-      return;
-    }
-
-    const numericCategoryId =
-      Number(
-        form.service_category,
-      );
-
-    if (
-      !Number.isInteger(
-        numericCategoryId,
-      )
-    ) {
-      setFormError(
-        "Invalid service category.",
-      );
-      return;
-    }
-
-    if (!form.service_title.trim()) {
-      setFormError(
-        "Please enter a service title.",
-      );
-      return;
-    }
-
-    if (
-      !form.service_description.trim()
-    ) {
-      setFormError(
-        "Please describe the issue.",
-      );
-      return;
-    }
-
-    if (!form.request_eta_date) {
-      setFormError(
-        "Please select the expected date.",
-      );
-      return;
-    }
-
-    const numericSla =
-      Number(form.SLA);
-
-    if (
-      !form.SLA ||
-      !Number.isInteger(numericSla) ||
-      numericSla <= 0
-    ) {
-      setFormError(
-        "Please enter a valid SLA in hours.",
-      );
-      return;
-    }
-
-    try {
-      setSubmitting(true);
-
-      const now = new Date();
-
-      /*
-       * IMPORTANT:
-       * Prisma expects these numeric fields as Int.
-       * Therefore we explicitly convert them to numbers.
-       */
-      await addRequest({
-        requestor_info:
-          numericUserId,
-
-        /*
-         * Backend should assign this.
-         * It is intentionally not shown to the resident.
-         */
-        request_assigned_to: "",
-
-        service_title:
-          form.service_title.trim(),
-
-        service_description:
-          form.service_description.trim(),
-
-        request_create_date:
-          now.toISOString(),
-
-        request_eta_date:
-          new Date(
-            `${form.request_eta_date}T00:00:00`,
-          ).toISOString(),
-
-        SLA: numericSla,
-
-        /*
-         * Not shown to resident.
-         */
-        feedback: "",
-
-        service_category:
-          numericCategoryId,
-
-        /*
-         * 11 = Open
-         * Not shown to resident.
-         */
-        service_status: 11,
-
-        pg_id: pgId,
-      });
-
-      /*
-       * Refetch after successful creation.
-       */
-      await fetchRequests({
-        requestor_info:
-          numericUserId,
-      });
-
-      setShowRequestForm(false);
-      setFormError(null);
-
-      setForm({
-        service_title: "",
-        service_description: "",
-        request_eta_date: "",
-        SLA: "",
-        service_category: "",
-      });
-    } catch (err: any) {
-      console.error(
-        "Create service request failed:",
-        err,
-      );
-
-      setFormError(
-        err?.response?.data
-          ?.message ||
-          err?.message ||
-          "Failed to create service request. Please try again.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    /*
+     * IMPORTANT:
+     *
+     * Your new serviceRequestsStore only contains:
+     *
+     * - fetchServiceRequests(pgId)
+     * - clearServiceRequests()
+     *
+     * It does NOT contain addRequest().
+     *
+     * Therefore creation must be handled separately through
+     * the API service.
+     *
+     * The previous addRequest() implementation has intentionally
+     * been removed from this component.
+     */
+    setFormError(
+      "Creating a service request requires the create-service-request API. The new store currently only supports fetching requests.",
+    );
   };
 
   /* --------------------------------------------------------------------- */
-  /* Render                                                                */
+  /* Render                                                                 */
   /* --------------------------------------------------------------------- */
 
   return (
@@ -1130,10 +943,7 @@ export const MyRequests: FC<
       >
         <div className="flex h-full min-h-0 flex-col gap-1">
 
-          {/* ------------------------------------------------------------- */}
-          {/* Header                                                        */}
-          {/* ------------------------------------------------------------- */}
-
+          {/* Header */}
           <header className="flex shrink-0 items-center justify-between pt-0.5">
             <span className="text-sm font-extrabold text-blue-600 sm:text-base">
               MyPG
@@ -1151,10 +961,7 @@ export const MyRequests: FC<
             </button>
           </header>
 
-          {/* ------------------------------------------------------------- */}
-          {/* Title                                                         */}
-          {/* ------------------------------------------------------------- */}
-
+          {/* Title */}
           <div className="flex shrink-0 items-center justify-between">
             <h1 className="text-xs font-extrabold text-gray-900 sm:text-sm">
               My Requests
@@ -1173,10 +980,7 @@ export const MyRequests: FC<
             </button>
           </div>
 
-          {/* ------------------------------------------------------------- */}
-          {/* Stat cards                                                     */}
-          {/* ------------------------------------------------------------- */}
-
+          {/* Stat cards */}
           <div className="grid shrink-0 grid-cols-3 gap-0.5">
             <StatCard
               icon={Wrench}
@@ -1203,10 +1007,7 @@ export const MyRequests: FC<
             />
           </div>
 
-          {/* ------------------------------------------------------------- */}
-          {/* Filter tabs                                                     */}
-          {/* ------------------------------------------------------------- */}
-
+          {/* Filter tabs */}
           <div className="flex shrink-0 flex-wrap items-center gap-1">
             {FILTERS.map(
               (filter) => (
@@ -1231,16 +1032,10 @@ export const MyRequests: FC<
             )}
           </div>
 
-          {/* ------------------------------------------------------------- */}
-          {/* Service Requests + Quick Help                                  */}
-          {/* ------------------------------------------------------------- */}
-
+          {/* Service Requests + Quick Help */}
           <div className="flex min-h-0 flex-1 flex-col gap-1 lg:grid lg:grid-cols-3 lg:items-stretch">
 
-            {/* ----------------------------------------------------------- */}
-            {/* Service Requests                                             */}
-            {/* ----------------------------------------------------------- */}
-
+            {/* Service Requests */}
             <div className="flex min-h-0 flex-1 flex-col rounded border border-gray-100 bg-white shadow-sm lg:col-span-2 lg:h-full">
 
               <div className="flex shrink-0 items-center justify-between px-1 pb-0.5 pt-0.5">
@@ -1265,10 +1060,6 @@ export const MyRequests: FC<
                   </button>
                 )}
               </div>
-
-              {/* --------------------------------------------------------- */}
-              {/* Loading                                                     */}
-              {/* --------------------------------------------------------- */}
 
               {loading ? (
                 <div className="flex min-h-0 flex-1 items-center justify-center">
@@ -1321,10 +1112,6 @@ export const MyRequests: FC<
                 </div>
               )}
 
-              {/* --------------------------------------------------------- */}
-              {/* Raise New Request                                         */}
-              {/* --------------------------------------------------------- */}
-
               <div className="shrink-0 p-1 pt-0.5">
                 <button
                   type="button"
@@ -1340,10 +1127,7 @@ export const MyRequests: FC<
               </div>
             </div>
 
-            {/* ----------------------------------------------------------- */}
-            {/* Quick Help                                                   */}
-            {/* ----------------------------------------------------------- */}
-
+            {/* Quick Help */}
             <div className="flex shrink-0 flex-col">
               <h2 className="mb-0.5 shrink-0 text-[8px] font-bold text-gray-900 sm:text-[9px]">
                 Quick Help
@@ -1379,9 +1163,7 @@ export const MyRequests: FC<
                   className="flex items-center gap-1 rounded border border-gray-100 bg-white px-1 py-1 text-left shadow-sm hover:bg-gray-50 lg:flex-1"
                 >
                   <IconBox
-                    icon={
-                      MessageCircle
-                    }
+                    icon={MessageCircle}
                     tone="purple"
                     size="md"
                   />
@@ -1404,10 +1186,6 @@ export const MyRequests: FC<
           </div>
         </div>
       </PageShell>
-
-      {/* ----------------------------------------------------------------- */}
-      {/* Raise Request Modal                                               */}
-      {/* ----------------------------------------------------------------- */}
 
       {showRequestForm && (
         <RaiseRequestForm
