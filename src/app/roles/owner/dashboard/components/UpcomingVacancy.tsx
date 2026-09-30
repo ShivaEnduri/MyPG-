@@ -4,6 +4,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import { useNavigate } from "react-router-dom";
+
 /* ============================================================
    TYPES
 ============================================================ */
@@ -31,6 +33,16 @@ const UpcomingVacancy: React.FC<UpcomingVacancyProps> = ({
   loading = false,
   onViewAll,
 }) => {
+
+
+   const navigate = useNavigate();
+
+
+  const handleVacancyPipeline = () => {
+  navigate("/owner/vacancy-pipeline");
+};
+
+
   return (
     <section
       className="
@@ -355,8 +367,8 @@ const UpcomingVacancy: React.FC<UpcomingVacancyProps> = ({
 
       <button
         type="button"
-        onClick={onViewAll}
-        disabled={!onViewAll}
+        onClick={handleVacancyPipeline}
+        // disabled={!onViewAll}
         className="
         mt-1
         flex

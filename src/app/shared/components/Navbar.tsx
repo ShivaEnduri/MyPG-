@@ -1577,210 +1577,68 @@ export default function Navbar({
         </>
       )}
 
-      {/* =================================================================== */}
-      {/* Navigation                                                          */}
-      {/* =================================================================== */}
+     {/* =================================================================== */}
+{/* Navigation                                                          */}
+{/* =================================================================== */}
 
-      {/* <nav className="mt-1 min-h-0 flex-1 overflow-hidden">
-        {canViewTaskFilters ? (
-          <ul className="flex flex-col gap-[clamp(1px,0.35vh,4px)] px-2">
-            <li>
-              <button
-                onClick={() => {
-                  if (isOpen) {
-                    setIsMyTasksExpanded(
-                      (s) => !s
-                    );
-                  }
+<nav className="mt-1 min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
+  <ul className="flex flex-col gap-[clamp(1px,0.35vh,4px)] px-2">
+    {sidebarNavItems.map((item, idx) => {
+      const isActive =
+        location.pathname === item.to ||
+        (item.label === "Dashboard" &&
+          location.pathname.startsWith(item.to));
 
-                  setCurrentFilter(
-                    "my-tasks"
-                  );
-                }}
-                className={`
-                  relative
-                  flex
-                  w-full
-                  items-center
-                  gap-3
-                  rounded-lg
-                  px-3
-                  py-2.5
-                  transition
-                  hover:bg-gray-50
-                  focus:outline-none
-                  ${
-                    !isOpen
-                      ? "justify-center"
-                      : "justify-between"
-                  }
-                  ${
-                    currentFilter ===
-                    "my-tasks"
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-600"
-                  }
-                `}
-              >
-                <span className="flex items-center gap-3">
-                  {isOpen && (
-                    <span>
-                      {isMyTasksExpanded ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                    </span>
-                  )}
-
-                  <span>
-                    <ClipboardList className="h-5 w-5" />
-                  </span>
-
-                  {isOpen && (
-                    <span className="text-sm font-medium">
-                      My Tasks
-                    </span>
-                  )}
-                </span>
-              </button>
-
-              {isOpen &&
-                isMyTasksExpanded && (
-                  <ul className="ml-4 mt-1 flex flex-col space-y-1">
-                    {myTasksSubItems.map(
-                      (
-                        sub,
-                        idx
-                      ) => {
-                        const isActive =
-                          currentFilter ===
-                          sub.id;
-
-                        return (
-                          <li
-                            key={
-                              idx
-                            }
-                          >
-                            <button
-                              onClick={() =>
-                                setCurrentFilter(
-                                  sub.id
-                                )
-                              }
-                              className={`
-                                relative
-                                flex
-                                w-full
-                                items-center
-                                justify-between
-                                rounded-lg
-                                px-3
-                                py-2
-                                transition
-                                hover:bg-gray-50
-                                focus:outline-none
-                                ${
-                                  isActive
-                                    ? "bg-blue-50 text-blue-600"
-                                    : "text-gray-600"
-                                }
-                              `}
-                            >
-                              <span className="flex items-center gap-3">
-                                <span>
-                                  {
-                                    sub.icon
-                                  }
-                                </span>
-
-                                <span className="text-sm">
-                                  {
-                                    sub.label
-                                  }
-                                </span>
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      }
-                    )}
-                  </ul>
-                )}
-            </li>
-          </ul>
-        ) : (
-          <ul className="flex flex-col space-y-1 px-2">
-            {sidebarNavItems.map(
-              (
-                item,
-                idx
-              ) => {
-                const isActive =
-                  location.pathname ===
-                  item.to;
-
-                return (
-                  <li
-                    key={
-                      idx
-                    }
-                  >
-                    <NavLink
-                      to={item.to}
-                      end={
-                        item.label ===
-                        "Dashboard"
-                      }
-                      title={
-                        !isOpen
-                          ? item.label
-                          : undefined
-                      }
-                      className={`
-                        flex
-                        items-center
-                        gap-[clamp(0.45rem,0.8vh,0.75rem)]
-                        rounded-lg
-                        px-3
-                        py-[clamp(0.28rem,0.8vh,0.625rem)]
-                        text-[clamp(0.7rem,1.6vh,0.875rem)]
-                        font-medium
-                        transition-colors
-                        ${
-                          !isOpen
-                            ? "justify-center"
-                            : ""
-                        }
-                        ${
-                          isActive
-                            ? "bg-blue-50 text-blue-600"
-                            : "text-gray-600 hover:bg-gray-50"
-                        }
-                      `}
-                    >
-                      <span className="flex-shrink-0 [&>svg]:h-[clamp(1rem,2vh,1.25rem)] [&>svg]:w-[clamp(1rem,2vh,1.25rem)]">
-                        {
-                          item.icon
-                        }
-                      </span>
-
-                      {isOpen && (
-                        <span>
-                          {
-                            item.label
-                          }
-                        </span>
-                      )}
-                    </NavLink>
-                  </li>
-                );
+      return (
+        <li key={`${item.to}-${idx}`}>
+          <NavLink
+            to={item.to}
+            end={item.label === "Dashboard"}
+            title={!isOpen ? item.label : undefined}
+            className={`
+              flex
+              items-center
+              gap-[clamp(0.45rem,0.8vh,0.75rem)]
+              rounded-lg
+              px-3
+              py-[clamp(0.28rem,0.8vh,0.625rem)]
+              text-[clamp(0.7rem,1.6vh,0.875rem)]
+              font-medium
+              transition-colors
+              ${
+                !isOpen
+                  ? "justify-center"
+                  : ""
               }
+              ${
+                isActive
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-600 hover:bg-gray-50"
+              }
+            `}
+          >
+            <span
+              className="
+                flex
+                flex-shrink-0
+                [&>svg]:h-[clamp(1rem,2vh,1.25rem)]
+                [&>svg]:w-[clamp(1rem,2vh,1.25rem)]
+              "
+            >
+              {item.icon}
+            </span>
+
+            {isOpen && (
+              <span className="truncate">
+                {item.label}
+              </span>
             )}
-          </ul>
-        )}
-      </nav> */}
+          </NavLink>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
 
       {/* =================================================================== */}
       {/* Bottom Navigation                                                    */}
@@ -1886,3 +1744,8 @@ export default function Navbar({
     </aside>
   );
 }
+
+
+
+
+

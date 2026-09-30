@@ -91,8 +91,8 @@ export interface PgInfo {
   pg_status: number;
   rstatus:number;
   // Category (was: st_pg_cat.category)
-  pg_cat_id: number;
-  pg_cat: string;
+  pg_cat: number;
+  category: string;
 
   // Description (was: st_pg_description.pg_desc)
   pg_description_id: number;
