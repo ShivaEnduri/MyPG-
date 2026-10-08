@@ -106,6 +106,7 @@ import MyRequests from "@/app/roles/user/myRequests/MyRequests";
 import Announcements from "@/app/roles/user/announcements/Announcements";
 
 import ProfileSettings from "@/app/shared/profileSupport/ProfileSupport";
+import HelpSupport from "./app/shared/helpSupport/HelpSupport";
 
 
 // ============================================================
@@ -248,6 +249,11 @@ export default function AppRoutes() {
       <Route
         path="requests"
         element={<RequestsPage />}
+      />
+
+       <Route
+        path="help-support"
+        element={<HelpSupport />}
       />
 
      

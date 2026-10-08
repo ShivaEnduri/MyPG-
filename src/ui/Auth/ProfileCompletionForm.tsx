@@ -97,10 +97,12 @@ const ProfileCompletionForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-3">
-      <h2 className="text-xl font-bold text-center">Complete Your Profile</h2>
-      <p className="text-sm text-gray-500 text-center">Just a few more details to get started</p>
-
+    // ProfileForm
+<form onSubmit={handleSubmit} className="space-y-2">
+  <h2 className="text-xl font-bold text-center">Complete Your Profile</h2>
+  <p className="text-sm text-gray-500 text-center">
+    Just a few more details to get started
+  </p>
       {submitError && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-md">
           <p className="text-red-600 text-sm text-center">{submitError}</p>

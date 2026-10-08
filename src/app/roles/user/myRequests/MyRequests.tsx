@@ -21,9 +21,11 @@ import {
 import { PageShell } from "@/app/shared/components/PageShell";
 import { useAuth } from "../../../../hooks/context/AuthContext";
 
-import { useServiceRequestsStore } from "@/app/shared/store/useServiceRequestsStore";
-
+import { useServiceRequestStore } from "@/app/shared/store/serviceRequestsStore";
 import { usePgServiceCategoryStore } from "@/app/shared/store/serviceCategoryStore";
+import { useUserPgMapStore } from "@/app/shared/store/userPgMapStore";
+
+import SuccessModal from "@/ui/Shared/SuccessModal";
 
 /* ----------------------------------------------------------------------- */
 /* Types                                                                    */
@@ -54,8 +56,6 @@ interface RequestItem {
 interface ServiceRequestForm {
   service_title: string;
   service_description: string;
-  request_eta_date: string;
-  SLA: string;
   service_category: string;
 }
 
@@ -276,11 +276,7 @@ const mapServiceRequest = (
       request?.request_create_date,
     ),
 
-    room:
-      request?.room_name ||
-      request?.room_no ||
-      request?.room ||
-      "—",
+    room: "—",
 
     description:
       request?.service_description ||
@@ -376,7 +372,6 @@ const RequestRow: FC<{
       <div className="mt-0.5 flex items-center gap-1 text-[5.5px] text-gray-500 sm:text-[6px]">
         <span className="flex items-center gap-0.5">
           <Calendar className="h-1.5 w-1.5" />
-
           {item.date}
         </span>
 
@@ -386,7 +381,6 @@ const RequestRow: FC<{
 
             <span className="flex items-center gap-0.5">
               <DoorOpen className="h-1.5 w-1.5" />
-
               {item.room}
             </span>
           </>
@@ -416,13 +410,17 @@ const RequestRow: FC<{
 
 interface RaiseRequestFormProps {
   form: ServiceRequestForm;
+
   setForm: React.Dispatch<
     React.SetStateAction<ServiceRequestForm>
   >;
+
   onSubmit: () => void;
   onClose: () => void;
+
   submitting: boolean;
   error: string | null;
+
   categories: any[];
   categoriesLoading: boolean;
 }
@@ -442,6 +440,8 @@ const RaiseRequestForm: FC<
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-2">
       <div className="w-full max-w-[360px] rounded-lg border border-gray-100 bg-white shadow-xl">
+
+        {/* Form Header */}
 
         <div className="flex items-center justify-between border-b border-gray-100 px-2 py-1.5">
           <div>
@@ -464,7 +464,11 @@ const RaiseRequestForm: FC<
           </button>
         </div>
 
+        {/* Form Body */}
+
         <div className="space-y-1.5 px-2 py-2">
+
+          {/* Service Category */}
 
           <div>
             <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
@@ -473,27 +477,17 @@ const RaiseRequestForm: FC<
 
             <select
               value={form.service_category}
-              onChange={(e) => {
-                const selectedCategory =
-                  categories.find(
-                    (category) =>
-                      String(category.id) ===
-                      e.target.value,
-                  );
-
+              onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
                   service_category:
                     e.target.value,
-
-                  SLA: selectedCategory
-                    ? String(
-                        selectedCategory.resolve_timeline,
-                      )
-                    : prev.SLA,
-                }));
-              }}
-              disabled={submitting || categoriesLoading}
+                }))
+              }
+              disabled={
+                submitting ||
+                categoriesLoading
+              }
               className="w-full rounded border border-gray-200 bg-white px-1.5 py-1 text-[6.5px] text-gray-800 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-100 sm:text-[7px]"
             >
               <option value="">
@@ -502,16 +496,37 @@ const RaiseRequestForm: FC<
                   : "Select category"}
               </option>
 
-              {categories.map((category) => (
-                <option
-                  key={category.id}
-                  value={category.id}
-                >
-                  {category.service_category}
-                </option>
-              ))}
+              {categories.map(
+                (category: any) => {
+                  const categoryId =
+                    category?.id ??
+                    category?.category_id;
+
+                  if (
+                    categoryId ===
+                    undefined
+                  ) {
+                    return null;
+                  }
+
+                  return (
+                    <option
+                      key={categoryId}
+                      value={String(
+                        categoryId,
+                      )}
+                    >
+                      {
+                        category.service_category
+                      }
+                    </option>
+                  );
+                },
+              )}
             </select>
           </div>
+
+          {/* Service Title */}
 
           <div>
             <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
@@ -534,13 +549,17 @@ const RaiseRequestForm: FC<
             />
           </div>
 
+          {/* Description */}
+
           <div>
             <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
               Description
             </label>
 
             <textarea
-              value={form.service_description}
+              value={
+                form.service_description
+              }
               onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
@@ -555,56 +574,7 @@ const RaiseRequestForm: FC<
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-1">
-
-            <div>
-              <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
-                Expected Date
-              </label>
-
-              <input
-                type="date"
-                value={
-                  form.request_eta_date
-                }
-                min={
-                  new Date()
-                    .toISOString()
-                    .split("T")[0]
-                }
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    request_eta_date:
-                      e.target.value,
-                  }))
-                }
-                disabled={submitting}
-                className="w-full rounded border border-gray-200 bg-white px-1.5 py-1 text-[6.5px] text-gray-800 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-100 sm:text-[7px]"
-              />
-            </div>
-
-            <div>
-              <label className="mb-0.5 block text-[6px] font-semibold text-gray-700 sm:text-[6.5px]">
-                SLA (Hours)
-              </label>
-
-              <input
-                type="number"
-                min="1"
-                value={form.SLA}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    SLA: e.target.value,
-                  }))
-                }
-                placeholder="e.g. 4"
-                disabled={submitting}
-                className="w-full rounded border border-gray-200 bg-white px-1.5 py-1 text-[6.5px] text-gray-800 outline-none placeholder:text-gray-300 transition focus:border-blue-500 focus:ring-1 focus:ring-blue-100 sm:text-[7px]"
-              />
-            </div>
-          </div>
+          {/* Error */}
 
           {error && (
             <div className="rounded border border-red-100 bg-red-50 px-1.5 py-1">
@@ -614,6 +584,8 @@ const RaiseRequestForm: FC<
             </div>
           )}
         </div>
+
+        {/* Form Footer */}
 
         <div className="flex items-center justify-end gap-1 border-t border-gray-100 px-2 py-1.5">
 
@@ -644,7 +616,6 @@ const RaiseRequestForm: FC<
               </>
             )}
           </button>
-
         </div>
       </div>
     </div>
@@ -667,18 +638,19 @@ export const MyRequests: FC<
   const { user } = useAuth();
 
   /* --------------------------------------------------------------------- */
-  /* Service request store                                                  */
+  /* Service request store                                                 */
   /* --------------------------------------------------------------------- */
 
   const {
-    data: serviceRequests,
+    requests,
     loading,
     error,
-    fetchServiceRequests,
-  } = useServiceRequestsStore();
+    fetchRequests,
+    addRequest,
+  } = useServiceRequestStore();
 
   /* --------------------------------------------------------------------- */
-  /* Service category store                                                 */
+  /* Service category store                                                */
   /* --------------------------------------------------------------------- */
 
   const {
@@ -686,6 +658,17 @@ export const MyRequests: FC<
     loading: categoriesLoading,
     fetchServiceCategories,
   } = usePgServiceCategoryStore();
+
+  /* --------------------------------------------------------------------- */
+  /* User PG map store                                                     */
+  /* --------------------------------------------------------------------- */
+
+  const {
+    userPgMapList,
+    loading: userPgMapLoading,
+    error: userPgMapError,
+    fetchUserPgMap,
+  } = useUserPgMapStore();
 
   const [activeFilter, setActiveFilter] =
     useState<FilterKey>("All");
@@ -706,37 +689,21 @@ export const MyRequests: FC<
     useState<ServiceRequestForm>({
       service_title: "",
       service_description: "",
-      request_eta_date: "",
-      SLA: "",
       service_category: "",
+    });
+
+  const [successModal, setSuccessModal] =
+    useState({
+      open: false,
+      title: "",
+      message: "",
     });
 
   const defaultVisibleCount =
     useResponsiveVisibleCount();
 
   /* --------------------------------------------------------------------- */
-  /* PG ID                                                                  */
-  /* --------------------------------------------------------------------- */
-
-  const pgId = useMemo(() => {
-    if (!Array.isArray(serviceRequests)) {
-      return 0;
-    }
-
-    const firstRecord =
-      serviceRequests.find(
-        (request: any) =>
-          request?.pg_id !== undefined &&
-          request?.pg_id !== null,
-      );
-
-    return (firstRecord as any)?.pg_id
-      ? Number((firstRecord as any).pg_id)
-      : 0;
-  }, [serviceRequests]);
-
-  /* --------------------------------------------------------------------- */
-  /* Fetch service requests                                                 */
+  /* Fetch resident requests                                               */
   /* --------------------------------------------------------------------- */
 
   useEffect(() => {
@@ -744,74 +711,114 @@ export const MyRequests: FC<
       return;
     }
 
-    /*
-     * The new serviceRequestsStore fetches using pgId.
-     *
-     * Therefore we first try to obtain pgId from the
-     * currently available request data.
-     *
-     * If your user/PG mapping store already provides pgId,
-     * replace the pgId calculation above with that store.
-     */
-    if (pgId > 0) {
-      fetchServiceRequests(pgId);
-    }
+    fetchRequests({
+      requestor_info: Number(user.id),
+    });
   }, [
     user?.id,
-    pgId,
-    fetchServiceRequests,
+    fetchRequests,
   ]);
 
   /* --------------------------------------------------------------------- */
-  /* Fetch service categories                                               */
+  /* Fetch USER -> PG mapping                                               */
+  /*                                                                       */
+  /* This is now the source of truth for the resident's PG.                */
+  /* It does NOT depend on whether the resident has service requests.      */
+  /* --------------------------------------------------------------------- */
+
+  useEffect(() => {
+    if (!user?.id) {
+      return;
+    }
+
+    const numericUserId = Number(user.id);
+
+    if (!Number.isInteger(numericUserId)) {
+      return;
+    }
+
+    fetchUserPgMap(numericUserId);
+  }, [
+    user?.id,
+    fetchUserPgMap,
+  ]);
+
+  /* --------------------------------------------------------------------- */
+  /* Fetch service categories                                              */
   /* --------------------------------------------------------------------- */
 
   useEffect(() => {
     fetchServiceCategories();
-  }, [fetchServiceCategories]);
+  }, [
+    fetchServiceCategories,
+  ]);
 
   /* --------------------------------------------------------------------- */
-  /* Convert API records to UI records                                      */
+  /* Convert API records to UI records                                     */
   /* --------------------------------------------------------------------- */
 
   const mappedRequests = useMemo(() => {
-    if (!Array.isArray(serviceRequests)) {
+    if (!Array.isArray(requests)) {
       return [];
     }
 
-    return serviceRequests
+    return requests
       .map(mapServiceRequest)
       .filter(
-        (item): item is RequestItem =>
+        (
+          item,
+        ): item is RequestItem =>
           item !== null,
       );
-  }, [serviceRequests]);
+  }, [requests]);
 
   /* --------------------------------------------------------------------- */
-  /* Dynamic PG name                                                        */
+  /* Dynamic PG information                                                */
+  /*                                                                       */
+  /* IMPORTANT: pgName and pgId now come from userPgMapList, not requests. */
+  /* This means a new resident with ZERO service requests can still have   */
+  /* their PG identified correctly.                                       */
   /* --------------------------------------------------------------------- */
+
+  const currentUserPg = useMemo(() => {
+    if (
+      !Array.isArray(userPgMapList) ||
+      userPgMapList.length === 0
+    ) {
+      return null;
+    }
+
+    return userPgMapList[0];
+  }, [userPgMapList]);
 
   const pgName = useMemo(() => {
-    const firstRecord =
-      Array.isArray(serviceRequests)
-        ? serviceRequests[0]
-        : null;
-
     return (
-      (firstRecord as { pg_name?: string } | null)?.pg_name ||
+      currentUserPg?.pg_name ||
       "My PG"
     );
-  }, [serviceRequests]);
+  }, [currentUserPg]);
+
+  const pgId = useMemo(() => {
+    const id = Number(
+      currentUserPg?.pg_id,
+    );
+
+    return Number.isInteger(id) &&
+      id > 0
+      ? id
+      : 0;
+  }, [currentUserPg]);
 
   /* --------------------------------------------------------------------- */
-  /* Dynamic counts                                                         */
+  /* Dynamic counts                                                        */
   /* --------------------------------------------------------------------- */
 
   const openCount = useMemo(
     () =>
       mappedRequests.filter(
         (request) =>
-          request.status === "Open",
+          request.status ===
+          "Open",
       ).length,
     [mappedRequests],
   );
@@ -820,7 +827,8 @@ export const MyRequests: FC<
     () =>
       mappedRequests.filter(
         (request) =>
-          request.status === "In Progress",
+          request.status ===
+          "In Progress",
       ).length,
     [mappedRequests],
   );
@@ -829,13 +837,14 @@ export const MyRequests: FC<
     () =>
       mappedRequests.filter(
         (request) =>
-          request.status === "Resolved",
+          request.status ===
+          "Resolved",
       ).length,
     [mappedRequests],
   );
 
   /* --------------------------------------------------------------------- */
-  /* Filtering                                                              */
+  /* Filtering                                                             */
   /* --------------------------------------------------------------------- */
 
   const filteredRequests = useMemo(() => {
@@ -845,7 +854,8 @@ export const MyRequests: FC<
 
     return mappedRequests.filter(
       (request) =>
-        request.status === activeFilter,
+        request.status ===
+        activeFilter,
     );
   }, [
     mappedRequests,
@@ -853,7 +863,7 @@ export const MyRequests: FC<
   ]);
 
   /* --------------------------------------------------------------------- */
-  /* Visible requests                                                       */
+  /* Visible requests                                                      */
   /* --------------------------------------------------------------------- */
 
   const visibleRequests = expanded
@@ -875,7 +885,7 @@ export const MyRequests: FC<
   };
 
   /* --------------------------------------------------------------------- */
-  /* Open form                                                              */
+  /* Open form                                                             */
   /* --------------------------------------------------------------------- */
 
   const handleOpenRequestForm = () => {
@@ -884,8 +894,6 @@ export const MyRequests: FC<
     setForm({
       service_title: "",
       service_description: "",
-      request_eta_date: "",
-      SLA: "",
       service_category: "",
     });
 
@@ -893,7 +901,7 @@ export const MyRequests: FC<
   };
 
   /* --------------------------------------------------------------------- */
-  /* Close form                                                             */
+  /* Close form                                                            */
   /* --------------------------------------------------------------------- */
 
   const handleCloseRequestForm = () => {
@@ -906,33 +914,211 @@ export const MyRequests: FC<
   };
 
   /* --------------------------------------------------------------------- */
-  /* Submit request                                                         */
+  /* Submit request                                                        */
   /* --------------------------------------------------------------------- */
 
   const handleSubmitRequest = async () => {
-    /*
-     * IMPORTANT:
-     *
-     * Your new serviceRequestsStore only contains:
-     *
-     * - fetchServiceRequests(pgId)
-     * - clearServiceRequests()
-     *
-     * It does NOT contain addRequest().
-     *
-     * Therefore creation must be handled separately through
-     * the API service.
-     *
-     * The previous addRequest() implementation has intentionally
-     * been removed from this component.
-     */
-    setFormError(
-      "Creating a service request requires the create-service-request API. The new store currently only supports fetching requests.",
-    );
+    setFormError(null);
+
+    /* --------------------------------------------------------------- */
+    /* Validate resident                                                */
+    /* --------------------------------------------------------------- */
+
+    if (!user?.id) {
+      setFormError(
+        "Unable to identify the resident. Please login again.",
+      );
+      return;
+    }
+
+    const numericUserId = Number(user.id);
+
+    if (
+      !Number.isInteger(
+        numericUserId,
+      )
+    ) {
+      setFormError(
+        "Invalid resident ID.",
+      );
+      return;
+    }
+
+    /* --------------------------------------------------------------- */
+    /* Validate PG                                                      */
+    /*                                                               */
+    /* pgId now comes from useUserPgMapStore, so this works even when  */
+    /* the resident has never created a service request before.        */
+    /* --------------------------------------------------------------- */
+
+    if (!pgId) {
+      if (userPgMapLoading) {
+        setFormError(
+          "PG information is still loading. Please wait a moment and try again.",
+        );
+      } else if (userPgMapError) {
+        setFormError(
+          userPgMapError,
+        );
+      } else if (
+        !userPgMapList.length
+      ) {
+        setFormError(
+          "Unable to identify your PG. Please refresh the page and try again.",
+        );
+      } else {
+        setFormError(
+          "Unable to identify your PG. Please refresh the page and try again.",
+        );
+      }
+
+      return;
+    }
+
+    /* --------------------------------------------------------------- */
+    /* Validate category                                               */
+    /* --------------------------------------------------------------- */
+
+    if (!form.service_category) {
+      setFormError(
+        "Please select a service category.",
+      );
+      return;
+    }
+
+    const numericCategoryId =
+      Number(
+        form.service_category,
+      );
+
+    if (
+      !Number.isInteger(
+        numericCategoryId,
+      )
+    ) {
+      setFormError(
+        "Invalid service category.",
+      );
+      return;
+    }
+
+    /* --------------------------------------------------------------- */
+    /* Validate title                                                   */
+    /* --------------------------------------------------------------- */
+
+    if (
+      !form.service_title.trim()
+    ) {
+      setFormError(
+        "Please enter a service title.",
+      );
+      return;
+    }
+
+    /* --------------------------------------------------------------- */
+    /* Validate description                                             */
+    /* --------------------------------------------------------------- */
+
+    if (
+      !form.service_description.trim()
+    ) {
+      setFormError(
+        "Please describe the issue.",
+      );
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+
+      /* ------------------------------------------------------------- */
+      /* Create service request                                         */
+      /* ------------------------------------------------------------- */
+
+      await addRequest({
+        requestor_info:
+          numericUserId,
+
+        // No manager assigned when resident creates request
+        request_assigned_to: null,
+
+        service_title:
+          form.service_title.trim(),
+
+        service_description:
+          form.service_description.trim(),
+
+        request_create_date:
+          new Date().toISOString(),
+
+        service_category:
+          numericCategoryId,
+
+        // 11 = TicketRaised / Open
+        service_status: 11,
+
+        // No feedback when request is first created
+        feedback: null,
+
+        /*
+         * IMPORTANT:
+         * This PG ID comes from the user -> PG mapping API.
+         * It does NOT come from the existing service requests.
+         */
+        pg_id: Number(pgId),
+      });
+
+      /* --------------------------------------------------------------- */
+      /* Refetch requests after successful creation                      */
+      /* --------------------------------------------------------------- */
+
+      await fetchRequests({
+        requestor_info:
+          numericUserId,
+      });
+
+      /* --------------------------------------------------------------- */
+      /* Close request form                                               */
+      /* --------------------------------------------------------------- */
+
+      setShowRequestForm(false);
+      setFormError(null);
+
+      setForm({
+        service_title: "",
+        service_description: "",
+        service_category: "",
+      });
+
+      /* --------------------------------------------------------------- */
+      /* Show success modal                                               */
+      /* --------------------------------------------------------------- */
+
+      setSuccessModal({
+        open: true,
+        title: "Request Submitted",
+        message:
+          "Your request has been submitted successfully. Your request will be resolved shortly.",
+      });
+    } catch (err: any) {
+      console.error(
+        "Create service request failed:",
+        err,
+      );
+
+      setFormError(
+        err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          err?.message ||
+          "Failed to create service request. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   /* --------------------------------------------------------------------- */
-  /* Render                                                                 */
+  /* Render                                                                */
   /* --------------------------------------------------------------------- */
 
   return (
@@ -944,6 +1130,7 @@ export const MyRequests: FC<
         <div className="flex h-full min-h-0 flex-col gap-1">
 
           {/* Header */}
+
           <header className="flex shrink-0 items-center justify-between pt-0.5">
             <span className="text-sm font-extrabold text-blue-600 sm:text-base">
               MyPG
@@ -962,6 +1149,7 @@ export const MyRequests: FC<
           </header>
 
           {/* Title */}
+
           <div className="flex shrink-0 items-center justify-between">
             <h1 className="text-xs font-extrabold text-gray-900 sm:text-sm">
               My Requests
@@ -973,14 +1161,17 @@ export const MyRequests: FC<
               title={pgName}
             >
               <span className="truncate">
-                {pgName}
+                {userPgMapLoading
+                  ? "Loading PG..."
+                  : pgName}
               </span>
 
-              <ChevronDown className="h-1.5 w-1.5 shrink-0 text-gray-500" />
+              <ChevronDown className="h-1 w-1 shrink-0 text-gray-500" />
             </button>
           </div>
 
           {/* Stat cards */}
+
           <div className="grid shrink-0 grid-cols-3 gap-0.5">
             <StatCard
               icon={Wrench}
@@ -1008,6 +1199,7 @@ export const MyRequests: FC<
           </div>
 
           {/* Filter tabs */}
+
           <div className="flex shrink-0 flex-wrap items-center gap-1">
             {FILTERS.map(
               (filter) => (
@@ -1033,9 +1225,11 @@ export const MyRequests: FC<
           </div>
 
           {/* Service Requests + Quick Help */}
+
           <div className="flex min-h-0 flex-1 flex-col gap-1 lg:grid lg:grid-cols-3 lg:items-stretch">
 
             {/* Service Requests */}
+
             <div className="flex min-h-0 flex-1 flex-col rounded border border-gray-100 bg-white shadow-sm lg:col-span-2 lg:h-full">
 
               <div className="flex shrink-0 items-center justify-between px-1 pb-0.5 pt-0.5">
@@ -1060,6 +1254,8 @@ export const MyRequests: FC<
                   </button>
                 )}
               </div>
+
+              {/* Loading */}
 
               {loading ? (
                 <div className="flex min-h-0 flex-1 items-center justify-center">
@@ -1112,6 +1308,8 @@ export const MyRequests: FC<
                 </div>
               )}
 
+              {/* Raise New Request */}
+
               <div className="shrink-0 p-1 pt-0.5">
                 <button
                   type="button"
@@ -1128,6 +1326,7 @@ export const MyRequests: FC<
             </div>
 
             {/* Quick Help */}
+
             <div className="flex shrink-0 flex-col">
               <h2 className="mb-0.5 shrink-0 text-[8px] font-bold text-gray-900 sm:text-[9px]">
                 Quick Help
@@ -1163,7 +1362,9 @@ export const MyRequests: FC<
                   className="flex items-center gap-1 rounded border border-gray-100 bg-white px-1 py-1 text-left shadow-sm hover:bg-gray-50 lg:flex-1"
                 >
                   <IconBox
-                    icon={MessageCircle}
+                    icon={
+                      MessageCircle
+                    }
                     tone="purple"
                     size="md"
                   />
@@ -1180,12 +1381,13 @@ export const MyRequests: FC<
 
                   <ChevronRight className="h-2 w-2 shrink-0 text-gray-400" />
                 </button>
-
               </div>
             </div>
           </div>
         </div>
       </PageShell>
+
+      {/* Raise Request Modal */}
 
       {showRequestForm && (
         <RaiseRequestForm
@@ -1205,6 +1407,22 @@ export const MyRequests: FC<
           }
         />
       )}
+
+      <SuccessModal
+        open={successModal.open}
+        title={successModal.title}
+        message={
+          successModal.message
+        }
+        onClose={() =>
+          setSuccessModal(
+            (prev) => ({
+              ...prev,
+              open: false,
+            }),
+          )
+        }
+      />
     </>
   );
 };
