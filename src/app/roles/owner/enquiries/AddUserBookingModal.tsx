@@ -1,3 +1,7 @@
+
+
+
+
 import React, {
   useEffect,
   useState,
@@ -111,6 +115,33 @@ interface FormState {
 
 
 /* ============================================================
+   DATE HELPERS
+============================================================ */
+
+// Use local date parts instead of toISOString(), which can shift the
+// date because it converts the current time to UTC.
+const getTodayDate = (): string => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
+const addDaysToDate = (date: string, days: number): string => {
+  const [year, month, day] = date.split("-").map(Number);
+  const result = new Date(year, month - 1, day);
+  result.setDate(result.getDate() + days);
+
+  const resultYear = result.getFullYear();
+  const resultMonth = String(result.getMonth() + 1).padStart(2, "0");
+  const resultDay = String(result.getDate()).padStart(2, "0");
+
+  return `${resultYear}-${resultMonth}-${resultDay}`;
+};
+
+/* ============================================================
    DEFAULT FORM
 ============================================================ */
 
@@ -161,7 +192,7 @@ const getDefaultForm = (): FormState => ({
   room_id: "",
   bed_id: "",
 
-  bkg_date: new Date().toISOString().split("T")[0],
+  bkg_date: getTodayDate(),
   planned_check_in_date: "",
   actual_check_in_date: "",
   planned_check_out_date: "",
@@ -312,26 +343,32 @@ const validateForm = (
   }
 
 
+  const today = getTodayDate();
+
   if (!form.planned_check_in_date) {
     errors.planned_check_in_date =
       "Check-in date is required";
+  } else if (form.planned_check_in_date < today) {
+    errors.planned_check_in_date =
+      "Check-in date cannot be in the past";
   }
-
 
   if (!form.planned_check_out_date) {
     errors.planned_check_out_date =
       "Check-out date is required";
+  } else if (form.planned_check_out_date <= today) {
+    errors.planned_check_out_date =
+      "Check-out must be a future date";
   }
-
 
   if (
     form.planned_check_in_date &&
     form.planned_check_out_date &&
-    form.planned_check_out_date <
+    form.planned_check_out_date <=
       form.planned_check_in_date
   ) {
     errors.planned_check_out_date =
-      "Must be after check-in";
+      "Check-out must be at least one day after check-in";
   }
 
 
@@ -1590,12 +1627,24 @@ useEffect(() => {
                   value={
                     form.planned_check_in_date
                   }
-                  onChange={(e) =>
+                  min={getTodayDate()}
+                  onChange={(e) => {
+                    const checkInDate = e.target.value;
+
                     updateField(
                       "planned_check_in_date",
-                      e.target.value
-                    )
-                  }
+                      checkInDate
+                    );
+
+                    // Clear checkout if it is no longer after check-in.
+                    if (
+                      form.planned_check_out_date &&
+                      checkInDate &&
+                      form.planned_check_out_date <= checkInDate
+                    ) {
+                      updateField("planned_check_out_date", "");
+                    }
+                  }}
                   className={inputClass(
                     "planned_check_in_date"
                   )}
@@ -1628,6 +1677,17 @@ useEffect(() => {
                   value={
                     form.planned_check_out_date
                   }
+                  min={(() => {
+                    const tomorrow = addDaysToDate(getTodayDate(), 1);
+                    const dayAfterCheckIn = addDaysToDate(
+                      form.planned_check_in_date || getTodayDate(),
+                      1
+                    );
+
+                    return dayAfterCheckIn > tomorrow
+                      ? dayAfterCheckIn
+                      : tomorrow;
+                  })()}
                   onChange={(e) =>
                     updateField(
                       "planned_check_out_date",

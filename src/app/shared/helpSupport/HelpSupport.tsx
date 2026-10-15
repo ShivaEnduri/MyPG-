@@ -176,19 +176,19 @@ const guides: Guide[] = [
       {
         title: "Open the Dashboard",
         description: "Go to your Owner Dashboard.",
+        image:"/help/owner/dashboard/dashboard.jpeg",
       },
       {
         title: "Click Beds & Rooms",
-        description: "Select Beds & Rooms from the sidebar.",
+        description: "Select Beds & Rooms from the sidebar and view the available rooms and beds.",
+        image:"/help/owner/bedmap/bedmap.png",
       },
-      {
-        title: "Open the Bed Map",
-        description: "The Bed Map will show the available rooms and beds.",
-      },
+      
       {
         title: "View bed details",
         description:
           "Select a room or bed to view its current details and status.",
+          image:"/help/owner/bedmap/roomdetails.png",
       },
     ],
   },
@@ -203,28 +203,30 @@ const guides: Guide[] = [
       {
         title: "Open Enquiries",
         description: "Click Enquiries from the sidebar.",
+        image:"/help/owner/enquiries/vacancy-pipeline.png",
       },
       {
         title: "Click Add Booking",
         description: "Select Add Booking to create a new guest booking.",
+        image:"/help/owner/enquiries/addBooking.jpeg",
       },
       {
         title: "Enter guest details",
-        description: "Enter the required guest and booking information.",
+        description: "Enter the required guest and booking information and submit the form.",
+        image:"/help/owner/enquiries/guestDetails.png",
       },
-      {
-        title: "Create the booking",
-        description: "Submit the booking.",
-      },
+      
       {
         title: "Open Open Bookings",
         description:
           "The newly created booking will appear in the Open Bookings section.",
+          image:"/help/owner/enquiries/openBookings.png",
       },
       {
         title: "Assign a bed",
         description:
           "Select the guest and assign an available bed from the available beds.",
+          image:"/help/owner/enquiries/assignBed.png",
       },
     ],
   },
@@ -239,16 +241,19 @@ const guides: Guide[] = [
       {
         title: "Open Residents",
         description: "Click Residents from the sidebar.",
+        image:"/help/owner/residents/residentsListings.png",
       },
       {
         title: "View the residents list",
         description:
           "The page will display the residents currently associated with the PG.",
+          image:"/help/owner/residents/residentsListings.png",
       },
       {
         title: "Open a resident profile",
         description:
           "Click View Profile to see the selected resident's details.",
+          image:"/help/owner/residents/residentsListings.png",
       },
     ],
   },
@@ -262,35 +267,23 @@ const guides: Guide[] = [
     steps: [
       {
         title: "Open Rent Status",
-        description: "Click Rent Status from the sidebar.",
+        description: "Click Rent Status from the sidebar and view the rent status of your residents.",
+        image:"/help/owner/rentStatus/rentList.png",
       },
-      {
-        title: "Check rent status",
-        description:
-          "View the rent status of the residents listed on the page.",
-      },
+      
       {
         title: "Send a reminder",
         description:
           "Click Send Reminder to send a rent reminder to the residents.",
+        image:"/help/owner/rentStatus/sendReminder.jpeg",
       },
       {
         title: "Select a resident",
         description:
-          "To add a payment, select the resident you want to update.",
+          "To add a payment, select the resident you want to update,Enter the amount received from the resident,Select or update the required payment status and Click Add Payment to save the payment.",
+          image:"/help/owner/rentStatus/addPayment.jpeg",
       },
-      {
-        title: "Enter the payment amount",
-        description: "Enter the amount received from the resident.",
-      },
-      {
-        title: "Update payment status",
-        description: "Select or update the required payment status.",
-      },
-      {
-        title: "Add the payment",
-        description: "Click Add Payment to save the payment.",
-      },
+     
     ],
   },
 
@@ -303,29 +296,21 @@ const guides: Guide[] = [
     steps: [
       {
         title: "Open Issues",
-        description: "Click Issues from the sidebar.",
+        description: "Click Issues from the sidebar and Check the Open Service Requests and Quick Escalations sections.",
+        image:"/help/owner/issues/issuesPage.png",
       },
-      {
-        title: "View service requests",
-        description:
-          "Check the Open Service Requests and Quick Escalations sections.",
-      },
+      
       {
         title: "Open a service request",
         description: "Click the pencil icon for the request you want to update.",
+        image:"/help/owner/issues/pencil.jpeg",
       },
       {
         title: "Assign the request",
-        description: "Select the Manager or Staff member responsible for it.",
+        description: "Select the Manager or Staff member responsible for it, Select the expected completion date and Select the required request status and save the changes.",
+        image:"/help/owner/issues/update.png",
       },
-      {
-        title: "Set the ETA",
-        description: "Select the expected completion date.",
-      },
-      {
-        title: "Update the status",
-        description: "Select the required request status and save the changes.",
-      },
+     
     ],
   },
 
@@ -339,32 +324,15 @@ const guides: Guide[] = [
       {
         title: "Open Broadcast",
         description: "Click Broadcast from the sidebar.",
+        image:"/help/owner/broadcast/broadcast.png",
       },
       {
         title: "Select a category",
-        description: "Choose the appropriate broadcast category.",
+        description: "Choose the appropriate broadcast category, Enter the announcement title, Enter the announcement message, Select your preferred communication channel and Click Send Announcement.",
+        image:"/help/owner/broadcast/select.jpeg",
       },
-      {
-        title: "Enter the title",
-        description: "Enter the announcement title.",
-      },
-      {
-        title: "Enter the message",
-        description: "Enter the announcement message.",
-      },
-      {
-        title: "Select a channel",
-        description: "Select your preferred communication channel.",
-      },
-      {
-        title: "Send the announcement",
-        description: "Click Send Announcement.",
-      },
-      {
-        title: "Check recent announcements",
-        description:
-          "The sent announcement will appear under Recent Announcements.",
-      },
+     
+     
     ],
   },
 
@@ -377,20 +345,10 @@ const guides: Guide[] = [
     steps: [
       {
         title: "Open Reports",
-        description: "Click Reports from the sidebar.",
+        description: "Click Reports from the sidebar, Check the reports available for your PG and Click the download option to save the report.",
+        image:"/help/owner/reports/reports.png",
       },
-      {
-        title: "View available reports",
-        description: "Check the reports available for your PG.",
-      },
-      {
-        title: "Select a monthly report",
-        description: "Choose the report you want to download.",
-      },
-      {
-        title: "Download the report",
-        description: "Click the download option to save the report.",
-      },
+      
     ],
   },
 ];
