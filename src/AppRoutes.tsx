@@ -56,7 +56,7 @@ import { TablesProvider } from "@/app/roles/admin/contexts/TablesContext";
 
 // import { GuestsTable } from "@/app/roles/admin/components/GuestsTable";
 
-
+import AddData from "./app/roles/admin/addData/AddData";
 
 import { VendorTable } from "@/app/roles/admin/components/VendorTable";
 
@@ -99,6 +99,7 @@ import ResidentHappiness from "./app/roles/owner/residentHappiness/ResidentHappi
 
 
 import ManagerDashboard from "@/app/roles/manager/dashboard/ManagerDashboard";
+import CheckInsCheckouts from "./app/roles/manager/checkInsCheckouts/CheckInsCheckouts";
 
 
 import ResidentDashboard from "@/app/roles/user/dashboard/ResidentDashboard";
@@ -360,7 +361,10 @@ export default function AppRoutes() {
       />
 
      
-
+       <Route
+        path="check-ins-checkouts"
+        element={<CheckInsCheckouts />}
+      />
     
       <Route
         path="guest-insights"
@@ -388,17 +392,17 @@ export default function AppRoutes() {
       element={<AdminLayout />}
     >
 
-      <Route
+      {/* <Route
         path="dashboard"
         element={<AdminDashboard />}
-      />
+      /> */}
 
       {/* <Route
         path="pgs"
         element={<PGsPage />}
       /> */}
 
-      <Route
+      {/* <Route
         path="guests"
         element={<GuestsPage />}
       />
@@ -406,7 +410,7 @@ export default function AppRoutes() {
       <Route
         path="requests"
         element={<RequestsPage />}
-      />
+      /> */}
 
       {/* <Route
         path="tables"
@@ -433,7 +437,7 @@ export default function AppRoutes() {
         element={<StaffTable />}
       /> */}
 
-      <Route
+      {/* <Route
         path="tables/vendors"
         element={<VendorTable />}
       />
@@ -453,11 +457,16 @@ export default function AppRoutes() {
       <Route
         path="settings"
         element={<SettingsPage />}
-      />
+      /> */}
 
-      <Route
+      {/* <Route
         path="custom-table/:tableId"
         element={<DynamicTableWrapper />}
+      /> */}
+
+       <Route
+        path="Dashboard"
+        element={<AddData />}
       />
 
     </Route>
