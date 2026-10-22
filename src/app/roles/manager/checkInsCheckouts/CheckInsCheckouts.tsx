@@ -1459,14 +1459,14 @@ export const CheckInsCheckouts: FC<
         {/* Add walk-in                                                      */}
         {/* --------------------------------------------------------------- */}
 
-        <button
+        {/* <button
           type="button"
           className="flex shrink-0 items-center justify-center gap-1 rounded-md border border-blue-200 bg-white py-1 text-[9px] font-bold text-blue-600 hover:bg-blue-50 sm:text-[10px]"
         >
           <UserPlus2 className="h-3 w-3" />
 
           Add Walk-in Enquiry
-        </button>
+        </button> */}
       </div>
 
       {/* ----------------------------------------------------------------- */}
