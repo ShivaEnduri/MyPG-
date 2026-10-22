@@ -1152,7 +1152,7 @@ export const ManagerDashboard: FC = () => {
       break;
 
     case "check-in":
-      // No navigation for now
+       navigate("/manager/check-ins-checkouts");
       break;
 
     case "create-ticket":
