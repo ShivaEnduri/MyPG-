@@ -1140,7 +1140,7 @@ export const ManagerDashboard: FC = () => {
       break;
 
     case "assign-bed":
-      navigate("/manager/bedmap");
+      navigate("/manager/vacancy-pipeline");
       break;
 
     case "update-rent":
