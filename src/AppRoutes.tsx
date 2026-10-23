@@ -308,6 +308,11 @@ export default function AppRoutes() {
         path="announcements"
         element={<Announcements />}
       />
+       <Route
+      path="/profile-settings"
+      element={<ProfileSettings />}
+    />
+
     </Route>
   </Route>
 
