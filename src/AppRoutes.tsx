@@ -175,10 +175,10 @@ export default function AppRoutes() {
       />
     }
   >
-    <Route
+    {/* <Route
       path="/profile-settings"
       element={<ProfileSettings />}
-    />
+    /> */}
   </Route>
 
 
