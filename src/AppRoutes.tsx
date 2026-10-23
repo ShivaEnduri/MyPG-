@@ -280,40 +280,41 @@ export default function AppRoutes() {
       />
     }
   >
-    <Route
-      path="/resident"
-      element={<DashboardLayout />}
-    >
-      <Route
-        path="mystay"
-        element={<MyStay />}
-      />
+   <Route
+  path="/resident"
+  element={<DashboardLayout />}
+>
+  <Route
+    path="mystay"
+    element={<MyStay />}
+  />
 
-      <Route
-        path="dashboard"
-        element={<ResidentDashboard />}
-      />
+  <Route
+    path="dashboard"
+    element={<ResidentDashboard />}
+  />
 
-      <Route
-        path="requests"
-        element={<MyRequests />}
-      />
+  <Route
+    path="requests"
+    element={<MyRequests />}
+  />
 
-      <Route
-        path="rent"
-        element={<ResidentRentStatus />}
-      />
+  <Route
+    path="rent"
+    element={<ResidentRentStatus />}
+  />
 
-      <Route
-        path="announcements"
-        element={<Announcements />}
-      />
-       <Route
-      path="/profile-settings"
-      element={<ProfileSettings />}
-    />
+  <Route
+    path="announcements"
+    element={<Announcements />}
+  />
 
-    </Route>
+  <Route
+    path="profile-settings"
+    element={<ProfileSettings />}
+  />
+</Route>
+    
   </Route>
 
 
