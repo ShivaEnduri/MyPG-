@@ -606,6 +606,12 @@ export const ResidentDashboard: FC<
     );
   };
 
+  const goToRent = () => {
+    navigate(
+      "/resident/rent"
+    );
+  };
+
   const goToRequests = () => {
     navigate(
       "/resident/requests"
@@ -639,8 +645,8 @@ export const ResidentDashboard: FC<
       label: "Rent Status",
       icon: Wallet,
       tone: "green" as Tone,
-      // No route requested for Rent Status
-      onClick: () => {},
+     
+      onClick: goToRent,
     },
     {
       label: "Announcements",
@@ -652,7 +658,7 @@ export const ResidentDashboard: FC<
       label: "Request Checkout",
       icon: ArrowRightCircle,
       tone: "orange" as Tone,
-      onClick: goToRequests,
+      onClick: goToMyStay,
     },
     {
       label: "Help",
@@ -1035,6 +1041,7 @@ export const ResidentDashboard: FC<
 
               <button
                 type="button"
+                onClick={goToMyStay}
                 className="flex items-center gap-0.5 rounded border border-blue-200 bg-white px-1 py-0.5 text-[6px] font-semibold text-blue-600 hover:bg-blue-50 sm:text-[6.5px]"
               >
                 <MessageSquare className="h-1.5 w-1.5" />

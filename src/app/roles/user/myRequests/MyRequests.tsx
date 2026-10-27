@@ -1,4 +1,5 @@
 import { FC, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   ChevronDown,
@@ -636,6 +637,14 @@ export const MyRequests: FC<
   bottomNavHeight = 56,
 }) => {
   const { user } = useAuth();
+
+   const navigate = useNavigate();
+   
+   const goToMyStay = () => {
+      navigate(
+        "/resident/mystay"
+      );
+    };
 
   /* --------------------------------------------------------------------- */
   /* Service request store                                                 */
@@ -1345,7 +1354,7 @@ export const MyRequests: FC<
                   />
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[6.5px] font-bold text-gray-900 sm:text-[7px]">
+                    <p onClick={goToMyStay} className="truncate text-[6.5px] font-bold text-gray-900 sm:text-[7px]">
                       Call Manager
                     </p>
 

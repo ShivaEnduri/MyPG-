@@ -38,6 +38,7 @@ import {
 } from "@/app/shared/store/userPgMapStore";
 
 import { useAuth } from "@/hooks/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 /* =========================================================
    TYPES
@@ -673,6 +674,13 @@ const ResidentAnnouncements: FC = () => {
   ======================================================= */
 
   const { dbUser } = useAuth();
+   const navigate = useNavigate();
+   
+   const goToMyStay = () => {
+      navigate(
+        "/resident/mystay"
+      );
+    };
 
   /* =======================================================
      USER PG MAP STORE
@@ -1483,6 +1491,7 @@ const ResidentAnnouncements: FC = () => {
 
               <button
                 type="button"
+                onClick={goToMyStay}
                 className="
                   flex
                   h-6
