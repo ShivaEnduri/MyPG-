@@ -1069,11 +1069,7 @@ export const MyRequests: FC<
         // No feedback when request is first created
         feedback: null,
 
-        /*
-         * IMPORTANT:
-         * This PG ID comes from the user -> PG mapping API.
-         * It does NOT come from the existing service requests.
-         */
+       
         pg_id: Number(pgId),
       });
 
